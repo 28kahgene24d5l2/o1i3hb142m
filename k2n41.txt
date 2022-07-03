@@ -1,4 +1,5 @@
 {
-   "blix" : "Joehana376",
-   "admin" : "nigel"
+   "blix" : "Method12",
+   "admin" : "nigel",
+   "pints" : "RapeSlayer"
 }
