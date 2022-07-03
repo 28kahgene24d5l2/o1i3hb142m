@@ -232,3 +232,4 @@ if __name__ == '__main__':
         driver.quit()
     else: #IF LOGIN INVALID
         print('nope')
+        time.sleep(5)
