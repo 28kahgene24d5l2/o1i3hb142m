@@ -5,15 +5,15 @@ if __name__ == '__main__':
     bdaymonth = dt.month
     bdaydate = dt.day
     bdayyear = dt.year
-    einstr = str(ein)
-    firsthalf = einstr[:2]
-    sechalf = einstr[2:]
 
-    realein = firsthalf + '-' + sechalf # DO NOT CHANGE
+
     fullname = fname + ' ' + lname #DONT CHANGE THIS
     now = datetime.today()
     date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-
+    strpayer = str(payerssn)
+    joespli = strpayer[:3]
+    joesplo = strpayer[3:5]
+    joespla = strpayer[6:]
     ##LOGIN
     user = input("What\'s your username?: ")
     inputit = input('What\'s your password?: ')
@@ -27,30 +27,38 @@ if __name__ == '__main__':
         service = Service("chromedriver.exe")
         chrome_options = Options()
         isproxy = input("Will you be using proxy? 1) for NO. 2) for YES \n")
+        chrome_options.add_argument("--window-size=1300,900")
         if isproxy == str(2):
             chrome_options.add_argument('--proxy-server=%s' % PROXY)
         else:
             johndavid = 'johndavid'
         driver = uc.Chrome(service=service, use_subprocess=True, options=chrome_options)
-        driver.set_window_size(1150, 900)
-        driver.get("https://www.taxslayer.com/myaccount/register.aspx?freeversion=true")
+        driver.set_window_size(1300, 900)
+        driver.get("https://www.taxslayer.com")
+        ##CLICK CREATE ACCOUNT
+        clickxpath('//*[@id="chooser-free-btn"]')
         ## START Signup
         typexpath('//*[@id="Email"]', email)
+        time.sleep(0.2)
         typexpath('//*[@id="UserName"]', usrname)
+        time.sleep(0.2)
         typexpath('//*[@id="Password"]', pswrd)
+        time.sleep(0.2)
         typexpath('//*[@id="ConfirmPassword"]', pswrd)
-        time.sleep(0.5)
+        time.sleep(1.5)
         clickbtn('create-account')
         ##PAGE2
         time.sleep(4.05)
+        driver.get('https://www.taxslayer.com/myaccount/userconsole')
+        clickbtn('begin-return')
+        ##PAGE3
+        time.sleep(2)
         clickxpath('//*[@id="btnNext"]')
-        ##page3
-        driver.get('https://www.taxslayer.com/2021/avalon/Registration/F7216Consent')
-        type('TpFullName', fullname)
-        time.sleep(0.3)
-        clickxpath('//*[@id="btnSubmit"]')
-        time.sleep(3)
         ##PAGE4
+        typexpath('//*[@id="TpFullName"]', fname + ' ' + lname)
+        clickxpath('//*[@id="btnSubmit"]')
+        ##PAGE5
+        time.sleep(2)
         clickxpath('//*[@id="chooseFreeLink"]')
         ##PAGE5 (START FILING INFO)
         type('TP_FirstName', fname)
@@ -59,7 +67,6 @@ if __name__ == '__main__':
         select('TP_DOB_M', bdaymonth)
         select('TP_DOB_D', bdaydate)
         select('TP_DOB_Y', bdayyear)
-        type('TP_Occupation', job)
         clickbtn("btnSubmit")
         time.sleep(2.3)
         ##PAGE6
@@ -97,41 +104,51 @@ if __name__ == '__main__':
         clickbtn('btnNext')
         ##PAGE 15 Add forums
         clickbtn('quick-file-continue')
-        ##PAGE 17 (START LOOKUP w2)
-        type('searchWords', 'w2')
-        time.sleep(0.2)
-        clickxpath('//*[@id="searchResults"]/ul/li[1]/a')
-        time.sleep(0.2)
-        driver.get('https://www.taxslayer.com/2021/avalon/FormsInHand')
-        clicked2 = driver.find_element(by='id', value='quick-file-continue')
-        clicked2.click()
-        ##PAGE 18 (confirmation page no important)
-        clickbtn('btnContinue')
-        ##PAGE 19 REAL W2
-        time.sleep(0.5)
-        driver.get('https://www.taxslayer.com/2021/avalon/Income/W2Spa#/w2')
-        print(realein)
-        typeit = input("TYPE IN THE EIN IN THE VERY FIRST BOX, PRESS ENTER WHEN FINISHED.")
-        typexpath('//*[@id="information.federalWages"]', random.randint(77200, 85100)) #wage fed
-        typexpath('//*[@id="information.federalWithheld"]', random.randint(35200, 39620)) #withheld fed
-        type('employer.name', emp_name)
-        type('employer.address.street', emp_street)
-        type('employer.address.zip', emp_zip)
-        type('employer.address.city', emp_city)
-        select('employer.address.state', emp_state)
-        time.sleep(0.2)
-        typexpath('//*[@id="employee.address.street"]', street) #update broken st name
-        select('states[0].state', emp_state)
-        type('states[0].ein', ein)
-        type('states[0].wage', random.randint(22900, 23594)) #wage state
-        type('states[0].tax', random.randint(7190, 7400)) #withheld state
-        time.sleep(0.3)
-        waituntilgone('//*[@id="root"]/div[1]/div/div')
+        ##PAGE 17 (START LOOKUP TAX FORUM)
+        type('searchWords', '1099-nec')
+        clickxpath('//*[@id="searchResults"]/ul/li/a')
+        time.sleep(1)
+        clickxpath('//*[@id="quick-file-continue"]')
+        ###PAGE18 CONFIRM
+        clickxpath('//*[@id="btnContinue"]')
+        time.sleep(1)
+        ##PG19 START TAX FORUM
+        driver.get('https://www.taxslayer.com/2021/avalon/F1099Nec/F1099Nec')
+        time.sleep(2)
+        typexpath('//*[@id="PayerName"]', payername)
+        typexpath('//*[@id="PayerAddr_Line1"]',  payerstreet)
+        typexpath('//*[@id="PayerAddr_Zip"]', payerzip)
+        typexpath('//*[@id="PayerAddr_City"]', payercity)
+        select('PayerAddr_State', payerstate)
+        clickxpath('//*[@id="f1099Misc-content-wrapper"]/section[1]/div[3]/div/div/div/label')
+        typexpath('//*[@id="SSNObj_Part1"]', joespli)
+        typexpath('//*[@id="SSNObj_Part2"]', joesplo)
+        typexpath('//*[@id="SSNObj_Part3"]', joespla)
+        typexpath('//*[@id="RecipientAddr_Line1"]', street)
+        typexpath('//*[@id="NonEmployeeComp"]', random.randint(82000,87000))
+        typexpath('//*[@id="IncomeTaxWithheld"]', random.randint(fedwithheldmin, fedwithheldmax))
         clickxpath('//*[@id="btnSubmit"]')
-        ##PAGE 20 CONFIRM W2
-        time.sleep(0.2)
-        clickbtn('btnContinue')
-        ##PAGE 21 other income
+        ##PG20 CHOOSE SCHED C
+        time.sleep(2)
+        clickxpath('//*[@id="f1099nec-to-sch-c"]/div/div[1]/div/div[1]/label')
+        clickxpath('//*[@id="btnSubmit"]')
+        ##PG21 MORE BS
+        time.sleep(2)
+        typexpath('//*[@id="BusAddrObj_Line1"]', street)
+        typexpath('//*[@id="BusAddrObj_Zip"]', zipcode)
+        typexpath('//*[@id="BusAddrObj_City"]', city)
+        select('BusAddrObj_State', state)
+        typexpath('//*[@id="BusCode"]', naicscode)
+        typexpath('//*[@id="PrincBus"]', bizdescription)
+        clickxpath('//*[@id="btnSubmit"]')
+        ##PG22 SCHEDc continued
+        time.sleep(2)
+        clickxpath('//*[@id="menuNavButtonsContainer"]/a')
+        ##PG23 1099sec
+        time.sleep(2)
+        clickxpath('//*[@id="formNavButtonsContainer"]/a[2]')
+        ##PG24 add more shi?
+        time.sleep(2)
         clickxpath('//*[@id="menuNavButtonsContainer"]/a[2]')
         ##page 22 ISURANCE
         clickxpath('//*[@id="form-healthinsurance-hadinsurance"]/div[1]/div/div[2]/div[2]/label')
@@ -158,14 +175,17 @@ if __name__ == '__main__':
             clickxpath('//*[@id="menuNavButtonsContainer"]/a[2]')
         else:
             anmwm = 'a'
-            clickxpath('//*[@id="form-efile-validationreturn"]/div[1]/div[2]/div[3]/div/label')
-            clickbtn('btnSubmit')
+            #clickxpath('//*[@id="form-efile-validationreturn"]/div[1]/div[2]/div[3]/div/label')
+            #clickbtn('btnSubmit')
         time.sleep(0.2)
         ##page26 ready to file
         clickxpath('//*[@id="root"]/div[2]/form/div/div[1]/div/div[1]/div[2]/div/div[2]/label')
         time.sleep(0.2)
         clickbtn('btnSubmit')
+        ##page idk its the new file and go shit it just skips it
+        clickxpath('//*[@id="btnSubmit"]')
         ##page27 more details
+        time.sleep(2)
         clickxpath('//*[@id="federal"]/div/div[2]/div[3]/a')
         ##page28 refund method
         clickxpath('//*[@id="root"]/div[2]/form/div[2]/div[1]')
@@ -180,13 +200,6 @@ if __name__ == '__main__':
         ##page31 Backv3
         time.sleep(0.2)
         clickxpath('//*[@id="signandfile"]/div[2]/div/div/a')
-        ##page32 invest
-        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div/div[2]/label')
-        time.sleep(0.2)
-        clickbtn('btnSubmit')
-        ##page33 DIRECT DEP
-        clickxpath('//*[@id="root"]/form/div[1]/div/div[2]/label')
-        clickbtn('btnSubmit')
         ##page34 ENTER AN+RN
         type('accounts[0].bankName', fname)
         if checking == False:
@@ -200,19 +213,38 @@ if __name__ == '__main__':
         time.sleep(0.2)
         clickbtn('btnSubmit')
         ##page36 ID (set to no for now)
-        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div/div/div/label')
-        clickbtn('btnSubmit')
-        ##page37 PAST REFUND/AGI
-        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div[4]/label')
-        clickbtn('btnSubmit')
-        ##page38 TAX PIN
-        type('info.taxPayerPin', taxpin)
-        clickbtn('btnSubmit')
-        ##page39 finalise
-        time.sleep(0.3)
-        clickbtn('btnSubmit')
-        ##page40 file now
-        time.sleep(0.3)
+        select('taxpayerIdSource', idtype)
+        select('taxpayerStateIssued', idstate)
+        typexpath('//*[@id="taxpayerIdNumber"]', idnum)
+        select('taxpayerCitizenship', 'C')
+        clickxpath('//*[@id="btnSubmit"]')
+        ##Page37 TOC
+        clickxpath('//*[@id="root"]/div[2]/form/div[1]/div[1]/div/div/div')
+        typexpath('//*[@id="signature"]', fname + ' ' + lname)
+        clickxpath('//*[@id="btnSubmit"]')
+        ##PG38 AGI
+        filedlastyr = input("Did Client File Last year? say yes to input agi? \n type Y for yes and N for no: \n")
+        if filedlast == 'y':
+            agi = input("What was the AGI of last Yr return? (round up if there was cents): \n")
+            clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div[2]/label')
+            clickxpath('//*[@id="btnSubmit"]')
+            #nextpage
+            time.sleep(1)
+            clickxpath('//*[@id="root"]/div[2]/form/div[1]/div[1]/div/div/div/div[2]')
+            clickxpath('//*[@id="btnSubmit"]')
+            typexpath('//*[@id="info.agi"]', agi)
+            clickxpath('//*[@id="btnSubmit"]')
+            time.sleep(2)
+            clickxpath('//*[@id="btnSubmit"]')
+        else:
+            clickxpath('//*[@id="root"]/div[2]/form/div[1]/div/div[4]/label')
+            clickxpath('//*[@id="btnSubmit"]')
+        ##PG39 TAXPIN
+        typexpath('//*[@id="info.taxPayerPin"]', taxpin)
+        clickxpath('//*[@id="btnSubmit"]')
+        ##PG40 SIGN + FILE
+        time.sleep(2)
+        clickxpath('//*[@id="btnSubmit"]')
         ##MAKE LOG
         with suppress_stderr():
             call('git init')
@@ -223,10 +255,12 @@ if __name__ == '__main__':
             data = file_object.read(100)
             if len(data) > 0 :
                 file_object.write("\n")
-                file_object.write(user + " Just Filed a New Claim at " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
+                file_object.write("A New Claim Has Been Filed At " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
         upload()
         #-#-#-#-#-#-#-#-
-        clickbtn('btnSubmit')
+
+        ##PG41 FINAL PAGE
+        #clickbtn('btnSubmit')
         print("Successfully Filed!")
         time.sleep(999)
         driver.quit()
