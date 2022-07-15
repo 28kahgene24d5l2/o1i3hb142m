@@ -1,5 +1,5 @@
 {
    "blix" : "Method12",
    "admin" : "nigel",
-   "pints" : "RapeSlayer"
+   "pints" : "716Slayer"
 }
