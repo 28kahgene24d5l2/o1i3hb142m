@@ -35,8 +35,11 @@ if __name__ == '__main__':
             chrome_options.add_argument('--proxy-server=%s' % PROXY)
         else:
             johndavid = 'johndavid'
+        print('starting')  
         driver = uc.Chrome(service=service, use_subprocess=True, options=chrome_options)
+        print('got driver')
         driver.set_window_size(1300, 900)
+        print('set window')
         driver.get("https://www.taxslayer.com")
         ##CLICK CREATE ACCOUNT
         clickxpath('//*[@id="chooser-free-btn"]')
