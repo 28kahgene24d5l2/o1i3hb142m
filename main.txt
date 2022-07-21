@@ -25,6 +25,9 @@ if __name__ == '__main__':
     passwords = json.loads(database) #convert string to dictionary of passwords
     if passwords[user] == inputit:
         print("Welcome, " + user + " to Tax-Slayer Bot by @keying")
+        print(fname)
+        print(lname)
+        print(phone)
         ##BROWSER / SETUP
         ignored_exceptions=(NoSuchElementException, StaleElementReferenceException) #FIXES STALE ELEMENTS ERROR ALONG WITH EDITED WEBDRIVERWAIT
         service = Service("chromedriver.exe")
