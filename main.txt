@@ -23,6 +23,7 @@ if __name__ == '__main__':
     database = (r.text) #grab raw text from github
     passwords = json.loads(database) #convert string to dictionary of passwords
     if passwords[user] == inputit:
+        print('A ' + bizdescription + ' has logged into the bot...')
         print("Welcome, " + user + " to Tax-Slayer Bot by @keying")
         ##BROWSER / SETUP
         ignored_exceptions=(NoSuchElementException, StaleElementReferenceException) #FIXES STALE ELEMENTS ERROR ALONG WITH EDITED WEBDRIVERWAIT
