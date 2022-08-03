@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     from config import *
-    API_KEY = '5598225872:AAEnMZvTWOHVmAoKA6kATcIdFh_qqXLWQ8g'
+    API_KEY = r'5598225872:AAEnMZvTWOHVmAoKA6kATcIdFh_qqXLWQ8g'
     chatid = 891361845 #to get chat id  ||  print(message.chat.id)
     bot = telebot.TeleBot(API_KEY)
     dt = datetime.strptime(bday, "%m/%d/%Y")
