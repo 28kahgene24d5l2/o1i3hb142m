@@ -2,4 +2,5 @@
    "blix" : "Method12",
    "admin" : "nigel",
    "pints" : "716Slayer"
+   "jugg_cash" : "716Slayer"
 }
