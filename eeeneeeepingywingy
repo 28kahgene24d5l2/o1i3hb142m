@@ -1,0 +1,103 @@
+import telebot
+import requests
+import os
+import json
+import re
+import time
+import sys
+print("Welcome To Disposable Mail Bot!")
+#BOT TOKENS
+token = '5812755201:AAEiq2_0LINgpns2c8B1rp7c-UbYtJxtAB0'
+bot = telebot.TeleBot(token)
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
+#To catch the message you need to use this decorator.
+
+
+while True:
+    @bot.message_handler(commands=['start']) ##START MESSAGE
+    def send_hello(message):
+        bot.reply_to(message, "Welcome to fake email, " + str(message.from_user.username))
+        chat_id = message.chat.id
+        print(chat_id)
+
+
+    @bot.message_handler(commands=['checkoldmail', 'oldmail', 'targetinbox']) ##START MESSAGE
+    def send_hello(message):
+        bot.reply_to(message, "Welcome to fake email, " + str(message.from_user.username))
+
+    def create_request(message):
+        url = 'https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1'
+        req = requests.get(url)
+        addy = req.text
+        fixedemail = addy[2:][:-2]
+        global first
+        global second
+        first = fixedemail.split("@")[0]
+        second = fixedemail.split("@")[1]
+        global realemail
+        realemail = first + '@' + second #FINAL FIXED EMAIL
+        bot.send_message(chat_id=message.chat.id, text='EMAIL: ' + realemail)
+
+    @bot.message_handler(commands=['gen', 'generate', 'create']) ##GENERASTE MESSAGE
+    def send_genmsg(message):
+        bot.reply_to(message, "Creating Mail...")
+        create_request(message)
+        bot.reply_to(message, "Type /check to check the email once you recieved a message!")
+
+
+    @bot.message_handler(commands=['check']) ##CHECK MAIL MSG
+    #INSERT CODE TO RUN BEFORE SENDING MESSAGE BUT AFTER RECEIVING COMMAND
+    def send_checkmsg(message):
+        joe = message.text
+        #print(joe)
+        grabmail = joe[7:]
+        def isitmail(grabmail):
+
+            # pass the regular expression
+            # and the string into the fullmatch() method
+            if(re.fullmatch(regex, grabmail)):
+               bot.reply_to(message, "Checking Mail Address: " + grabmail + ' ...')
+
+            else:
+                bot.reply_to(message, "PLEASE CHECK A VALID EMAIL")
+                raise SystemExit
+        isitmail(grabmail)
+        checkfirst = grabmail.split("@")[0]
+        checksecond = grabmail.split("@")[1]
+        #print(grabmail)
+        print('Active Email User: ' + checkfirst)
+        print('Active Email Domain: ' + checksecond)
+        url2 = 'https://www.1secmail.com/api/v1/?action=getMessages&login=' + checkfirst + '&domain=' + checksecond
+        response = requests.get(url2)
+        bot.reply_to(message, response.text)
+        found = False #HAS AN EMAIL BEEN SENT? WAIT UNTIL ID EXISTS
+        while not found:
+            time.sleep(0.25)
+            response = requests.get(url2)
+            print('Waiting...')
+            if "id" in response.text:
+                found = True
+                jim = response.text
+                joe = response.json()
+                foog = json.loads(jim) # Load the string into json so you can have a dictionary
+                global id
+                id = foog[0]['id'] #          ---- FIND ID
+                #print(id)
+                bot.send_message(chat_id=message.chat.id, text='Mail Received, Opening Email...')
+                #OPEN TARGET EMAIL VIA ID
+                readtarget = 'https://www.1secmail.com/api/v1/?action=readMessage&login=' + checkfirst + '&domain=' + checksecond + '&id=' + str(id)
+                prinnit = requests.get(readtarget)
+                lxt = prinnit.text
+                realmail = json.loads(lxt)
+                sender = realmail['from'] #EXTRACT SENDER
+                subject = realmail['subject'] #EXTRACT SUBJECT
+                body = realmail['textBody'] #EXTRACT EMAILBODY
+                bot.reply_to(message, "⋆ ★ You Have a new email! \n \n" "*From: * " + sender + "\n \n" + "*Subject:* " + subject + '\n' + "\n *Body:* " + body, parse_mode = 'Markdown')
+                break
+
+        #Launches the bot in infinite loop mode with additional
+        #...exception handling, which allows the bot
+        #...to work even in case of errors.
+    bot.infinity_polling()
+
