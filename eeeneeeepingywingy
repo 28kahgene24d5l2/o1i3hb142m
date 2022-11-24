@@ -1,10 +1,3 @@
-import telebot
-import requests
-import os
-import json
-import re
-import time
-import sys
 print("Welcome To Disposable Mail Bot!")
 #BOT TOKENS
 token = '5812755201:AAEiq2_0LINgpns2c8B1rp7c-UbYtJxtAB0'
