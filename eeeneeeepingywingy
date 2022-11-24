@@ -36,7 +36,7 @@ while True:
     def send_genmsg(message):
         bot.reply_to(message, "Creating Mail...")
         create_request(message)
-        bot.reply_to(message, "Type /check to check the email once you recieved a message!")
+        bot.reply_to(message, "Type /check *email* to check the email once you recieved a message!", parse_mode = 'Markdown')
 
 
     @bot.message_handler(commands=['check']) ##CHECK MAIL MSG
